@@ -934,27 +934,25 @@ details p {
 .video-intro-closing {
   pointer-events: none;
 }
-.intro-skip {
+.video-intro-controls {
   position: absolute !important;
   right: 35px;
   top: 30px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+}
+.intro-skip,
+.intro-sound {
   font-size: 11px !important;
   letter-spacing: 1px;
-  z-index: 2;
   background: #1119 !important;
   color: white !important;
   border: 1px solid #ffffff70 !important;
   backdrop-filter: blur(8px);
 }
-.video-intro-play {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  transform: translate(-50%, -50%);
-  background: white !important;
-  color: #161616 !important;
-  letter-spacing: 1px;
+.intro-sound {
+  min-width: 104px;
 }
 .site-shell.intro-active {
   visibility: hidden;
@@ -1209,7 +1207,7 @@ details p {
     flex-direction: column;
     gap: 10px;
   }
-  .intro-skip {
+  .video-intro-controls {
     right: 20px;
     top: 20px;
   }

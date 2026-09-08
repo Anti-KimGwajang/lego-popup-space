@@ -12,7 +12,8 @@ export default function VideoIntro({ onFinish }: VideoIntroProps) {
   const timerRef = useRef<number | null>(null);
   const finishedRef = useRef(false);
   const [closing, setClosing] = useState(false);
-  const [playBlocked, setPlayBlocked] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [muted, setMuted] = useState(true);
 
   const finish = useCallback(() => {
     if (finishedRef.current) return;
@@ -21,33 +22,42 @@ export default function VideoIntro({ onFinish }: VideoIntroProps) {
     timerRef.current = window.setTimeout(onFinish, 750);
   }, [onFinish]);
 
-  const play = useCallback(async () => {
+  const toggleSound = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
-    video.muted = true;
-    try {
-      await video.play();
-      setPlayBlocked(false);
-    } catch {
-      setPlayBlocked(true);
+    if (!started) {
+      video.currentTime = 0;
+      video.muted = false;
+      video.volume = 1;
+      try {
+        await video.play();
+        setStarted(true);
+        setMuted(false);
+      } catch {
+        video.muted = true;
+        setMuted(true);
+      }
+      return;
     }
-  }, []);
+    const nextMuted = !video.muted;
+    video.muted = nextMuted;
+    video.volume = 1;
+    setMuted(nextMuted);
+  }, [started]);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const playFrame = window.requestAnimationFrame(() => void play());
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') finish();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
-      window.cancelAnimationFrame(playFrame);
       window.removeEventListener('keydown', onKeyDown);
       if (timerRef.current !== null) window.clearTimeout(timerRef.current);
     };
-  }, [finish, play]);
+  }, [finish]);
 
   return (
     <dialog
@@ -59,22 +69,20 @@ export default function VideoIntro({ onFinish }: VideoIntroProps) {
         ref={videoRef}
         className="video-intro-media"
         src="./assets/lego-cinematic.mp4"
-        autoPlay
         muted
         playsInline
         preload="auto"
         onEnded={finish}
-        onError={() => setPlayBlocked(true)}
       />
       <div className="video-intro-fade" aria-hidden="true" />
-      {playBlocked && (
-        <Button className="video-intro-play" onClick={() => void play()}>
-          OPENING PLAY
+      <div className="video-intro-controls">
+        <Button className="intro-sound" onClick={() => void toggleSound()}>
+          {muted ? 'SOUND ON' : 'SOUND OFF'}
         </Button>
-      )}
-      <Button className="intro-skip" onClick={finish}>
-        SKIP INTRO
-      </Button>
+        <Button className="intro-skip" onClick={finish}>
+          SKIP INTRO
+        </Button>
+      </div>
     </dialog>
   );
 }
