@@ -3,7 +3,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import BrickIntro from '@/components/brick-intro';
+import VideoIntro from '@/components/video-intro';
 
 const chapters = [
   ['home', 'OPENING'],
@@ -229,7 +229,7 @@ function Diagram({ scene, step }: { scene: number; step: number }) {
 }
 
 export default function Home() {
-  const [intro, setIntro] = useState(false),
+  const [intro, setIntro] = useState(true),
     [introKey, setIntroKey] = useState(0),
     [active, setActive] = useState('home'),
     [zone, setZone] = useState(0),
@@ -240,20 +240,12 @@ export default function Home() {
   const main = useRef<HTMLElement>(null);
   const finish = useCallback(() => {
     setIntro(false);
-    try {
-      sessionStorage.setItem('lego-intro-seen', '1');
-    } catch {}
     document.getElementById('home-title')?.focus({ preventScroll: true });
   }, []);
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const media = matchMedia('(prefers-reduced-motion: reduce)');
       setReduced(media.matches);
-      let seen = false;
-      try {
-        seen = sessionStorage.getItem('lego-intro-seen') === '1';
-      } catch {}
-      if (!seen && !media.matches) setIntro(true);
     });
     return () => cancelAnimationFrame(frame);
   }, []);
@@ -351,8 +343,12 @@ export default function Home() {
   };
   return (
     <>
-      {intro && <BrickIntro key={introKey} onFinish={finish} />}
-      <div inert={intro ? true : undefined}>
+      {intro && <VideoIntro key={introKey} onFinish={finish} />}
+      <div
+        className={intro ? 'site-shell intro-active' : 'site-shell'}
+        inert={intro ? true : undefined}
+        aria-hidden={intro || undefined}
+      >
         <a className="skip-link" href="#idea">
           발표 내용으로 이동
         </a>

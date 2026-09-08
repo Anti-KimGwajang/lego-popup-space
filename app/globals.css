@@ -893,62 +893,71 @@ details a {
 details p {
   word-break: keep-all;
 }
-.intro {
+.video-intro {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: #bf111d;
+  width: 100vw;
+  height: 100svh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--red);
   color: white;
-  transition: opacity 0.65s ease;
-  opacity: 1;
 }
-.intro-closing {
-  opacity: 0;
-  pointer-events: none;
-}
-.intro-canvas {
+.video-intro-media {
   position: absolute;
   inset: 0;
-}
-.intro-canvas canvas {
-  display: block;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.75s ease;
+}
+.video-intro-fade {
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  opacity: 0;
+  transition: opacity 0.75s ease;
+  pointer-events: none;
+}
+.video-intro-closing .video-intro-media {
+  opacity: 0;
+}
+.video-intro-closing .video-intro-fade {
+  opacity: 1;
+}
+.video-intro-closing {
+  pointer-events: none;
 }
 .intro-skip {
   position: absolute !important;
   right: 35px;
-  bottom: 30px;
+  top: 30px;
   font-size: 11px !important;
   letter-spacing: 1px;
   z-index: 2;
+  background: #1119 !important;
+  color: white !important;
+  border: 1px solid #ffffff70 !important;
+  backdrop-filter: blur(8px);
 }
-.intro-progress {
+.video-intro-play {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  background: #ffdc00;
-  width: 0;
-  animation: intro-progress 7.3s linear forwards;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  background: white !important;
+  color: #161616 !important;
+  letter-spacing: 1px;
 }
-.intro-fallback {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-}
-.intro-fallback strong {
-  font-size: 20vw;
-  font-weight: 950;
-  color: #ffdc00;
-  letter-spacing: -0.08em;
-}
-.intro-fallback p {
-  font-size: 14px;
+.site-shell.intro-active {
+  visibility: hidden;
 }
 .section .split,
 .section .concept-words,
@@ -964,11 +973,6 @@ details p {
 .section.is-visible .audiences {
   opacity: 1;
   transform: translateY(0);
-}
-@keyframes intro-progress {
-  to {
-    width: 100%;
-  }
 }
 @media (min-width: 1400px) {
   .section {
@@ -1207,7 +1211,7 @@ details p {
   }
   .intro-skip {
     right: 20px;
-    bottom: 24px;
+    top: 20px;
   }
 }
 html[data-motion='reduced'] {
@@ -1238,15 +1242,6 @@ html[data-motion='reduced'] .image-chapter > img {
   }
 }
 
-.intro {
-  width: 100vw;
-  height: 100svh;
-  max-width: none;
-  max-height: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
 .scene-select {
   padding: 0;
   margin: 0;
