@@ -8,23 +8,11 @@ import VideoIntro from '@/components/video-intro';
 const chapters = [
   ['home', 'OPENING'],
   ['idea', 'SYSTEM'],
-  ['site', 'BEXCO'],
+  ['site', 'KINTEX'],
   ['concept', 'CONCEPT'],
-  ['journey', 'JOURNEY'],
   ['experiences', 'EXPERIENCE'],
   ['material', 'MATERIAL'],
   ['ending', 'REBUILD'],
-];
-const zones = [
-  ['ENTRY', '진입 / 아이콘', '입구의 강한 장면으로 호기심을 유도합니다.'],
-  ['BRAND', '역사 / 철학', '놀이와 조립이라는 브랜드의 본질을 만납니다.'],
-  ['DISCOVER', '브릭 시스템', '모듈이 서로 연결되는 원리를 이해합니다.'],
-  ['BUILD', '조립 체험', '손으로 만지고 조립하며 공간에 참여합니다.'],
-  ['CREATE', '자유 창작', '정해진 답 없이 자신만의 조합을 만듭니다.'],
-  ['DISPLAY', '작품 전시', '방문객의 결과물이 공간의 콘텐츠가 됩니다.'],
-  ['PHOTO', '기록 / 공유', '자신의 작품과 공간을 함께 기록합니다.'],
-  ['SHOP', '제품 판매', '체험에서 발견한 취향을 구매로 연결합니다.'],
-  ['EXIT', '공유 / 회수', '경험은 공유되고, 모듈은 다시 순환합니다.'],
 ];
 const scenes = [
   {
@@ -221,9 +209,6 @@ function Diagram({ scene, step }: { scene: number; step: number }) {
             </g>
           );
         })}
-      <text x="40" y="420" fill="#aaa" fontSize="11" letterSpacing="2">
-        CONCEPT SIMULATION / NOT TO SCALE
-      </text>
     </svg>
   );
 }
@@ -232,7 +217,6 @@ export default function Home() {
   const [intro, setIntro] = useState(true),
     [introKey, setIntroKey] = useState(0),
     [active, setActive] = useState('home'),
-    [zone, setZone] = useState(0),
     [scene, setScene] = useState(0),
     [step, setStep] = useState(0),
     [reduced, setReduced] = useState(false),
@@ -266,17 +250,11 @@ export default function Home() {
           Math.min(1, (innerHeight - rect.top) / (innerHeight + rect.height)),
         );
         section.style.setProperty('--progress', String(p));
-        if (rect.top < innerHeight * 0.88) section.classList.add('is-visible');
+        const revealPoint = section.id === 'idea' ? 0.62 : 0.88;
+        if (rect.top < innerHeight * revealPoint)
+          section.classList.add('is-visible');
       }
       setActive(current);
-      const route = document.getElementById('journey');
-      if (route) {
-        const r = route.getBoundingClientRect();
-        if (r.top < 0 && r.bottom > innerHeight)
-          setZone(
-            Math.min(8, Math.floor((-r.top / (r.height - innerHeight)) * 9)),
-          );
-      }
       const experience = document.getElementById('experiences');
       if (experience && innerWidth > 1000 && innerHeight > 760) {
         const r = experience.getBoundingClientRect();
@@ -357,7 +335,7 @@ export default function Home() {
             LEGO<span>SPACE STUDY</span>
           </a>
           <div className="header-right">
-            <span>BEXCO, BUSAN</span>
+            <span>KINTEX</span>
             <Button className="quiet-button" onClick={replay}>
               INTRO ↻
             </Button>
@@ -377,12 +355,41 @@ export default function Home() {
           ))}
         </nav>
         <main ref={main}>
-          <section id="home" className="hero">
-            <div className="eyebrow">SPATIAL DESIGN PROJECT — BEXCO</div>
+          <section
+            id="home"
+            className={intro ? 'hero' : 'hero hero-ready'}
+            onPointerMove={(event) => {
+              const rect = event.currentTarget.getBoundingClientRect();
+              event.currentTarget.style.setProperty(
+                '--mx',
+                String((event.clientX - rect.left) / rect.width - 0.5),
+              );
+              event.currentTarget.style.setProperty(
+                '--my',
+                String((event.clientY - rect.top) / rect.height - 0.5),
+              );
+            }}
+            onPointerLeave={(event) => {
+              event.currentTarget.style.setProperty('--mx', '0');
+              event.currentTarget.style.setProperty('--my', '0');
+            }}
+          >
+            <div className="hero-grid" aria-hidden="true" />
+            <div className="hero-modules" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+            <div className="eyebrow">SPATIAL DESIGN PROJECT — KINTEX</div>
             <h1 id="home-title" tabIndex={-1}>
-              BUILD
+              <span className="hero-word hero-word-build">BUILD</span>
               <br />
-              <span>YOUR</span> SPACE<span className="period">.</span>
+              <span className="hero-word hero-word-your">YOUR</span>{' '}
+              <span className="hero-word hero-word-space">SPACE</span>
+              <span className="period">.</span>
             </h1>
             <div className="hero-bottom">
               <p>
@@ -405,9 +412,10 @@ export default function Home() {
             <div className="eyebrow">01 / SYSTEM IN PLAY</div>
             <div className="split">
               <h2>
-                작은 연결이
+                <span className="idea-key idea-key-first">작은 연결이</span>
                 <br />
-                공간을 바꾼다<span className="red-dot">.</span>
+                <span className="idea-key idea-key-second">공간을 바꾼다</span>
+                <span className="red-dot">.</span>
               </h2>
               <div>
                 <p className="lead">
@@ -426,6 +434,11 @@ export default function Home() {
                 (name, i) => (
                   <div key={name}>
                     <span>0{i + 1}</span>
+                    <div className="system-studs" aria-hidden="true">
+                      {Array.from({ length: i + 1 }, (_, stud) => (
+                        <i key={stud} />
+                      ))}
+                    </div>
                     <strong>{name}</strong>
                     <small>
                       {['작은 단위', '연결', '조립', '해체', '재구성'][i]}
@@ -469,26 +482,24 @@ export default function Home() {
                 <br />
                 Big possibilities.
               </h2>
-              <p>사용자 제공 비주얼 레퍼런스 / 공간 렌더링 아님</p>
             </div>
           </section>
           <section id="site" className="section site">
-            <div className="eyebrow">02 / PLACE & PEOPLE</div>
+            <div className="site-brick-render" aria-hidden="true">
+              <img src="./assets/lego-brick-cluster.png" alt="" />
+            </div>
+            <div className="eyebrow">02 / LEGO × KINTEX</div>
             <div className="split">
               <div>
+                <span className="collab-label">POP-UP SPACE COLLABORATION</span>
                 <h2>
-                  BEXCO<span className="red-dot">.</span>
-                  <br />
-                  <span className="outline-text">BUSAN</span>
+                  KINTEX<span className="red-dot">.</span>
                 </h2>
                 <p className="body-copy">
                   브랜드를 발견하고, 직접 만들고,
                   <br />
                   경험을 공유하는 팝업 공간 제안.
                 </p>
-                <span className="caption">
-                  프로젝트 대상: BEXCO / 세부 대상 구역 미정
-                </span>
               </div>
               <div className="site-note">
                 <span>DESIGN BRIEF</span>
@@ -504,9 +515,6 @@ export default function Home() {
                 <div className="site-conditions">
                   <b>설계 전 확인할 현장 조건</b>
                   <p>대상 면적 · 출입구 · 층고 · 기존 동선</p>
-                  <small>
-                    현재 자료는 브랜드 리서치와 공간 콘셉트 단계입니다.
-                  </small>
                 </div>
               </div>
             </div>
@@ -547,6 +555,9 @@ export default function Home() {
               <br />
               공간의 언어로.
             </h2>
+            <div className="concept-character" aria-hidden="true">
+              <img src="./assets/brick-character-cutout-4x.png" alt="" />
+            </div>
             <div className="concept-words">
               <div>
                 <span>01</span>
@@ -576,55 +587,9 @@ export default function Home() {
               </p>
             </div>
           </section>
-          <section id="journey" className="journey">
-            <div className="journey-sticky section">
-              <div className="eyebrow">04 / SPACE JOURNEY</div>
-              <div className="split">
-                <div>
-                  <h2>
-                    발견에서
-                    <br />
-                    나만의 창작까지.
-                  </h2>
-                  <p className="body-copy">
-                    브랜드 이해 → 조립 → 창작 → 전시 → 구매.
-                    <br />
-                    행동의 순서가 공간의 흐름을 만듭니다.
-                  </p>
-                  <p className="caption">
-                    프로그램 관계도 / 실제 평면 및 면적 비율 아님
-                  </p>
-                </div>
-                <div className="zone-detail" aria-live="polite">
-                  <span>0{zone + 1} / 09</span>
-                  <h3>{zones[zone][0]}</h3>
-                  <h4>{zones[zone][1]}</h4>
-                  <p>{zones[zone][2]}</p>
-                </div>
-              </div>
-              <div className="zone-map">
-                {zones.map(([name, ko], i) => (
-                  <button
-                    key={name}
-                    onClick={() => setZone(i)}
-                    className={`${i === zone ? 'selected' : ''} ${i < zone ? 'visited' : ''}`}
-                    aria-pressed={i === zone}
-                  >
-                    <span>0{i + 1}</span>
-                    <strong>{name}</strong>
-                    <small>{ko}</small>
-                  </button>
-                ))}
-              </div>
-              <div className="journey-foot">
-                <span>SEE → TOUCH → BUILD → CREATE → SHARE</span>
-                <span>SCROLL TO FOLLOW THE JOURNEY ↓</span>
-              </div>
-            </div>
-          </section>
           <section id="experiences" className="section experiences">
             <div className="experience-sticky">
-              <div className="eyebrow">05 / FOUR EXPERIENCES</div>
+              <div className="eyebrow">04 / FOUR EXPERIENCES</div>
               <div className="experience-heading">
                 <h2>
                   공간을 바꾸는
@@ -681,7 +646,7 @@ export default function Home() {
                           : '참여로 채우기'}{' '}
                     <span>↗</span>
                   </Button>
-                  <small>개념 시뮬레이션 · {step + 1} / 4</small>
+                  <small>STEP {step + 1} / 4</small>
                 </div>
               </div>
               <div className="gallery-principle">
@@ -695,7 +660,7 @@ export default function Home() {
             </div>
           </section>
           <section id="material" className="section material">
-            <div className="eyebrow">06 / MATERIAL & COLOR</div>
+            <div className="eyebrow">05 / MATERIAL & COLOR</div>
             <div className="split">
               <h2>
                 차분한 바탕.
@@ -745,7 +710,7 @@ export default function Home() {
             </div>
           </section>
           <section id="ending" className="section ending">
-            <div className="eyebrow">07 / THE NEXT ASSEMBLY</div>
+            <div className="eyebrow">06 / THE NEXT ASSEMBLY</div>
             <h2>
               BUILD.
               <br />
@@ -800,18 +765,7 @@ export default function Home() {
             </div>
           </div>
           <details>
-            <summary>프로젝트 자료 및 출처</summary>
-            <p>
-              LEGO_Popup_Store_Interior_Research.pptx, 20페이지를 바탕으로
-              재구성한 인테리어 디자인학과 프로젝트입니다. 조닝·재료·체험 공간은
-              학생 설계 제안이며, BEXCO의 확정 행사 또는 LEGO 공식 캠페인이
-              아닙니다.
-            </p>
-            <p>
-              현재는 콘셉트 단계로, 실측 평면과 공간 렌더링은 포함하지
-              않았습니다. 다음 설계 단계: 대상 구역 확정 → 현장 분석 → 모듈 치수
-              → 평면·동선 → 가구·조명·그래픽 → 공간 렌더링.
-            </p>
+            <summary>REFERENCE</summary>
             <a
               href="https://www.lego.com/en-us/aboutus/lego-group/the-lego-group-history"
               target="_blank"
@@ -833,15 +787,10 @@ export default function Home() {
             >
               Fifth Avenue Store — 리테일 참고 사례 ↗
             </a>
-            <p>
-              PPT의 매장 벤치마크: 개인화, 브릭 선택, 창작 경험을 체험형 공간의
-              참고로 사용했습니다. 제공 이미지: 블록 재질 참고. 사이트의
-              개념도는 확정 설계나 실제 운영 결과가 아닙니다.
-            </p>
           </details>
           <div className="footer-bottom">
             <span>INTERIOR DESIGN / CONCEPT STUDY</span>
-            <span>BEXCO, BUSAN — BUILD YOUR SPACE</span>
+            <span>KINTEX — BUILD YOUR SPACE</span>
           </div>
         </footer>
       </div>
