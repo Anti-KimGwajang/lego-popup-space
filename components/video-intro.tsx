@@ -25,8 +25,7 @@ export default function VideoIntro({ onFinish }: VideoIntroProps) {
   const toggleSound = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
-    if (!started) {
-      video.currentTime = 0;
+    if (!started || video.paused) {
       video.muted = false;
       video.volume = 1;
       try {
@@ -69,9 +68,11 @@ export default function VideoIntro({ onFinish }: VideoIntroProps) {
         ref={videoRef}
         className="video-intro-media"
         src="./assets/lego-cinematic.mp4"
+        autoPlay
         muted
         playsInline
         preload="auto"
+        onPlay={() => setStarted(true)}
         onEnded={finish}
       />
       <div className="video-intro-fade" aria-hidden="true" />
